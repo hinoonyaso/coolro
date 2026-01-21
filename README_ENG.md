@@ -14,15 +14,15 @@ The goal was to move beyond isolated demos by connecting real-time tracking with
 ## System Architecture
 ```mermaid
 graph TD
-  A[Flutter App (Smartphone)] -->|Upload video| B[Firebase Storage]
-  A -->|POST /analyze| C[EC2 Flask Server]
+  A["Flutter App (Smartphone)"] -->|Upload video| B["Firebase Storage"]
+  A -->|POST /analyze| C["EC2 Flask Server"]
   C -->|MediaPipe Pose + Feedback| A
 
-  A -->|HTTP| D[Raspberry Pi UI + Local Server]
+  A -->|HTTP| D["Raspberry Pi UI + Local Server"]
   D -->|HTTP| A
-  D -->|Camera + Ultrasonic| G[Raspberry Pi Tracker]
-  D -->|UART 1/2/3/4| E[STM32F103C8T6]
-  E -->|PWM + Direction| F[L298N + 4 Motors]
+  D -->|Camera + Ultrasonic| G["Raspberry Pi Tracker"]
+  D -->|UART 1/2/3/4| E["STM32F103C8T6"]
+  E -->|PWM + Direction| F["L298N + 4 Motors"]
 ```
 
 ## Data Flow / API Flow
