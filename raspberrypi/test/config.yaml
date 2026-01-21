@@ -1,0 +1,9 @@
+trig_pin: 23
+echo_pin: 24
+serial_port: "/dev/ttyS0"
+baudrate: 9600
+distance_threshold_cm: 50.0
+center_tolerance_px: 50
+sensor_interval_s: 0.1
+message_interval_s: 1.0
+echo_timeout_s: 0.03
