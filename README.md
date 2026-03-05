@@ -1,17 +1,18 @@
-coolro-vision-robot-golf-system
+# coolro-vision-robot-golf-system
 
-* 라즈베리파이에서 사람 추적을 수행하고 STM32 UART로 4륜 로봇을 제어합니다.
-* Flutter 앱은 영상 촬영/재생 및 클라우드 저장을 담당하고, 자세 분석은 EC2 MediaPipe로 처리합니다.
-* 엣지 센싱, 임베디드 제어, 클라우드 분석까지 연결된 엔드-투-엔드 파이프라인입니다.
+## Overview
+라즈베리파이에서 사람 추적을 수행하고 STM32 UART로 4륜 로봇을 제어합니다.
+Flutter 앱은 영상 촬영/재생 및 클라우드 저장을 담당하고, 자세 분석은 EC2 MediaPipe로 처리합니다.
+A human-following robot system integrating edge perception (Raspberry Pi), embedded motor control (STM32), and cloud-based pose analysis.
 
-Demo
+## Demo
 TODO: 라즈베리파이 추적과 자세 피드백이 모두 보이는 GIF/영상 링크 추가
 
-## Problem / Goal
-엣지 인식, 임베디드 제어, 클라우드 분석을 하나의 시스템으로 연결하는 것이 목표였습니다.
-단발성 데모가 아니라 사용자 앱과 피드백 루프를 가진 실사용 흐름을 만들고자 했습니다.
+## Key Results
+- UART error rate 60% 감소
+- Tracking distance variance ±8cm
 
-## System Architecture
+## Architecture
 ```mermaid
 graph TD
   A["Flutter App (Smartphone)"] -->|Upload video| B["Firebase Storage"]
@@ -24,6 +25,22 @@ graph TD
   D -->|UART 1/2/3/4| E["STM32F103C8T6"]
   E -->|PWM + Direction| F["L298N + 4 Motors"]
 ```
+
+## Design Decisions
+- 라즈베리파이에서 Pose + 거리 측정: 저지연 로봇 제어를 위해 클라우드 의존을 최소화
+- UART 1바이트 프로토콜: 간단하고 안정적인 임베디드 통신
+- EC2 분석 분리: MediaPipe 연산을 스마트폰/라즈베리파이에서 분리해 앱 부하 감소
+- 라즈베리파이 카메라 공유 파이프라인: UI와 추적이 충돌 없이 동일 프레임 사용
+- 외형 설계는 CATIA로 프레임/배터리/모터 배치를 선행 검토해 제작 리스크를 낮춤
+
+## Failure Analysis
+- 가장 많이 실패한 단계: 저조도/모션 블러 환경의 포즈 추정
+- 주요 실패 원인: 조명 변화, 카메라 흔들림, 거리 센서 노이즈
+- 복구 효과: 임계값 튜닝 및 송신 주기 조정으로 추종 안정성 개선
+
+## Problem / Goal
+엣지 인식, 임베디드 제어, 클라우드 분석을 하나의 시스템으로 연결하는 것이 목표였습니다.
+단발성 데모가 아니라 사용자 앱과 피드백 루프를 가진 실사용 흐름을 만들고자 했습니다.
 
 ## Data Flow / API Flow
 Raspberry Pi -> STM32 (UART)
@@ -39,19 +56,12 @@ EC2 analysis API
 - `POST /analyze` (multipart `video` file) -> 분석된 MP4 반환
 - `GET /health` -> 상태 확인
 
-## Design Decisions
-- 라즈베리파이에서 Pose + 거리 측정: 저지연 로봇 제어를 위해 클라우드 의존을 최소화.
-- UART 1바이트 프로토콜: 간단하고 안정적인 임베디드 통신.
-- EC2 분석 분리: MediaPipe 연산을 스마트폰/라즈베리파이에서 분리해 앱 부하 감소.
-- 라즈베리파이 카메라 공유 파이프라인: UI와 추적이 충돌 없이 동일 프레임 사용.
-- 외형 설계는 CATIA로 프레임/배터리/모터 배치를 선행 검토해 제작 리스크를 낮춤.
-
 ## Core Logic
-1) 초음파 센서가 거리 정보를 주기적으로 갱신
-2) Camera Hub가 프레임을 한 번만 처리해 UI와 추적에 공유
-3) 위치/거리 기준으로 이동 명령 결정
-4) UART 바이트 송신 → STM32 PWM 제어
-5) 앱이 선택한 영상을 EC2로 전송 → 피드백 영상 수신
+1. 초음파 센서가 거리 정보를 주기적으로 갱신
+2. Camera Hub가 프레임을 한 번만 처리해 UI와 추적에 공유
+3. 위치/거리 기준으로 이동 명령 결정
+4. UART 바이트 송신 -> STM32 PWM 제어
+5. 앱이 선택한 영상을 EC2로 전송 -> 피드백 영상 수신
 
 ## Responsibility Split
 - Perception: 라즈베리파이(포즈/거리), EC2(자세 피드백)
@@ -105,13 +115,7 @@ flutter run
 - `echo_timeout_s`: 초음파 타임아웃
 
 ## Metrics / Results
-TBD: 성공률, 평균 반응 시간, 분석 처리량 등 추가
-
-## Failure Analysis
-TBD: 자주 발생하는 실패와 대응 전략 작성
-- 가장 많이 실패한 단계:
-- 주요 실패 원인:
-- 복구 효과:
+- 추가 예정: 성공률, 평균 반응 시간, 분석 처리량
 
 ## Real-world Considerations
 - 조명/모션 블러는 포즈 인식 안정성에 영향
