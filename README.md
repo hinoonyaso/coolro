@@ -5,9 +5,6 @@
 Flutter 앱은 영상 촬영/재생 및 클라우드 저장을 담당하고, 자세 분석은 EC2 MediaPipe로 처리합니다.
 A human-following robot system integrating edge perception (Raspberry Pi), embedded motor control (STM32), and cloud-based pose analysis.
 
-## Demo
-TODO: 라즈베리파이 추적과 자세 피드백이 모두 보이는 GIF/영상 링크 추가
-
 ## Key Results
 - UART error rate 60% 감소
 - Tracking distance variance ±8cm
