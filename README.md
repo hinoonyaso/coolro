@@ -28,15 +28,15 @@ CoolRo는 **엣지 인식(Raspberry Pi)**, **임베디드 모터 제어(STM32)**
 
 ```mermaid
 graph TD
-  A["Flutter App<br/>(Smartphone)"] -->|"영상 업로드"| B["Firebase Storage"]
-  A -->|"POST /analyze<br/>(Multipart video)"| C["AWS EC2<br/>Flask + MediaPipe"]
-  C -->|"분석된 MP4 반환"| A
+  A["Flutter App (Smartphone)"] -->|영상 업로드| B["Firebase Storage"]
+  A -->|POST /analyze| C["AWS EC2 - Flask + MediaPipe"]
+  C -->|분석된 MP4 반환| A
 
-  A -->|"HTTP<br/>(영상/스코어 API)"| D["Raspberry Pi<br/>Flask + PyQt5 UI"]
-  D -->|"HTTP"| A
-  D -->|"카메라 + 초음파"| G["CameraHub<br/>MediaPipe Tracker"]
-  D -->|"UART /dev/ttyS0<br/>9600 baud"| E["STM32F103C8T6"]
-  E -->|"PWM TIM2 CH1/CH2<br/>+ L298N IN1~IN4"| F["4× DC 모터"]
+  A -->|HTTP 영상/스코어 API| D["Raspberry Pi - Flask + PyQt5"]
+  D -->|HTTP| A
+  D -->|카메라 + 초음파| G["CameraHub - MediaPipe Tracker"]
+  D -->|UART 9600 baud| E["STM32F103C8T6 - PID 제어"]
+  E -->|PWM + L298N| F["4x DC 모터"]
 ```
 
 ---
