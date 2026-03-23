@@ -17,6 +17,10 @@ class Config:
     sensor_interval_s: float = 0.1
     message_interval_s: float = 1.0
     echo_timeout_s: float = 0.03
+    # 야외 환경 강건성
+    clahe_clip_limit: float = 2.0
+    clahe_grid_size: int = 8
+    distance_filter_size: int = 5
 
 
 def load_config(path: Path = CONFIG_PATH) -> Config:

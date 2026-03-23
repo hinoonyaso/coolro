@@ -10,7 +10,7 @@ from src.transport import SerialTransport
 class RobotController:
     def __init__(self, config) -> None:
         self.config = config
-        self.sensor = DistanceSensor(config.trig_pin, config.echo_pin, config.echo_timeout_s)
+        self.sensor = DistanceSensor(config.trig_pin, config.echo_pin, config.echo_timeout_s, config.distance_filter_size)
         self.transport = SerialTransport(config.serial_port, config.baudrate)
         self.tracker = PersonTracker(config)
         self.state = SharedState()
@@ -43,10 +43,10 @@ class RobotController:
         if time.time() - self.last_send_time < self.config.message_interval_s:
             return
         if person_x is None:
-            command = 4
+            self.transport.send_stop()
         else:
             frame_center = frame_width // 2
             distance = self.state.get_distance()
-            command = self.tracker.decide_command(person_x, frame_center, distance)
-        self.transport.send_byte(command)
+            error, mode = self.tracker.compute_error_and_mode(person_x, frame_center, distance)
+            self.transport.send_error_packet(error, mode)
         self.last_send_time = time.time()

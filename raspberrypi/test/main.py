@@ -14,7 +14,7 @@ from src.transport import SerialTransport
 def main() -> None:
     config = load_config()
 
-    sensor = DistanceSensor(config.trig_pin, config.echo_pin, config.echo_timeout_s)
+    sensor = DistanceSensor(config.trig_pin, config.echo_pin, config.echo_timeout_s, config.distance_filter_size)
     sensor.setup()
 
     transport = SerialTransport(config.serial_port, config.baudrate)
